@@ -1,41 +1,65 @@
 TicTacToe = {}
 
-TicTacToe.width = 400
-TicTacToe.height = 400
-TicTacToe.line_width = 4
 TicTacToe.x = 100
 TicTacToe.y = 100
 
-function TicTacToe:draw()
-  local real_width  = self.width  - (self.line_width * 2)
-  local real_height = self.height - (self.line_width * 2)
+TicTacToe.width = 400
+TicTacToe.height = 400
 
-  local l1x = math.floor(real_width/3)
-  local l1y = math.floor(real_height/3)
+TicTacToe.line_width = TicTacToe.width / 100
+
+function TicTacToe:board()
+  self:draw_box()
+
+  local boxw, boxh = TicTacToe:box_size()
 
   love.graphics.setLineWidth(self.line_width)
   -- horizontal lines
-  love.graphics.line(self.x + l1x, self.y, self.x + l1x, self.y + l1y*3)
-  love.graphics.line(self.x + l1x*2, self.y, self.x + l1x*2, self.y + l1y*3)
+  love.graphics.line(self.x + boxw, self.y, self.x + boxw, self.y + self.height)
+  love.graphics.line(
+      self.x + (boxw*2) + self.line_width, self.y,
+      self.x + (boxw*2) + self.line_width, self.y + self.height)
   -- vertical lines
-  love.graphics.line(self.x, self.y + l1y, self.x + l1x*3, self.y + l1y)
-  love.graphics.line(self.x, self.y + l1y*2, self.x + l1x*3, self.y + l1y*2)
+  love.graphics.line(self.x, self.y + boxh, self.x + self.width, self.y + boxh)
+  love.graphics.line(
+      self.x, self.y + boxh*2 + self.line_width,
+      self.x + self.width, self.y + boxh*2 + self.line_width)
 end
 
-function TicTacToe:crux(x,y)
-  local real_x = 100
-  local real_y = 100
-  local real_width = 70
-  local real_height = 70
+-- x -> 1..3, y -> 1..3
+function TicTacToe:cross(x,y)
+  local boxw, boxh = TicTacToe:box_size()
+  local crossw = boxw * .8
+  local crossh = boxh * .8
+  local crossx = self.x + (x-1)*boxw + (x)*self.line_width + boxw * .1
+  local crossy = self.y + (y-1)*boxh + (y)*self.line_width + boxh * .1
 
-  love.graphics.line(real_x, real_y, real_x + real_width, real_y + real_height)
-  love.graphics.line(real_x + real_width, real_y, real_x, real_y + real_height)
+  love.graphics.line(crossx, crossy, crossx + crossw, crossy + crossh)
+  love.graphics.line(crossx + crossw, crossy, crossx, crossy + crossh)
 end
 
+-- x -> 1..3, y -> 1..3
 function TicTacToe:circle(x,y)
-  local real_x = 180
-  local real_y = 320
-  local radius = 35
+  local boxw, boxh = TicTacToe:box_size()
+  local circlex = self.x + (x-1)*boxw + boxw * .5 + (x-1)*self.line_width
+  local circley = self.y + (y-1)*boxh + boxh * .5 + (y-1)*self.line_width
+  local radius = (self.width / 9) + (self.width / 30)
 
-  love.graphics.circle( "line", real_x, real_y, radius, 16 )
+  love.graphics.circle( "line", circlex, circley, radius, 16 )
+end
+
+function TicTacToe:draw_box()
+  love.graphics.setLineWidth(1)
+  love.graphics.line(self.x, self.y, self.x + self.width, self.y)
+  love.graphics.line(self.x, self.y, self.x, self.y + self.height)
+  love.graphics.line(self.x + self.width, self.y, self.x + self.width, self.y + self.height)
+  love.graphics.line(self.x, self.y + self.height, self.x + self.width, self.y + self.height)
+end
+
+function TicTacToe:box_size()
+  local w
+  local h
+  w = math.floor(self.width / 3) - self.line_width * 2
+  h = math.floor(self.height / 3) - self.line_width * 2
+  return w, h
 end
